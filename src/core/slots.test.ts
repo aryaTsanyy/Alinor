@@ -213,3 +213,25 @@ describe("calculateFreeSlots", () => {
     );
   });
 });
+
+test("scenario: class + one-off meeting + gym with a long post-buffer", () => {
+  const rules = [
+    event("kelas", "09:00", "10:40"),
+    event("rapat", "14:00", "15:00", {
+      isRecurring: false,
+      daysOfWeek: undefined,
+      specificDate: MON,
+      category: "work",
+    }),
+    event("gym", "17:00", "18:30", {
+      category: "personal",
+      customPostBufferMin: 30,
+    }),
+  ];
+  expect(calculateFreeSlots(MON, rules, [], settings)).toEqual([
+    slot("08:00", "09:00", 2),
+    slot("10:55", "14:00", 6),
+    slot("15:15", "17:00", 3),
+    slot("19:00", "22:00", 5),
+  ]);
+});
