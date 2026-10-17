@@ -1,5 +1,4 @@
 import { describe, test, expect } from "vitest";
-import fc from "fast-check";
 import { parseTime, formatTime } from "./time";
 
 describe("parseTime", () => {
@@ -36,10 +35,7 @@ describe("formatTime", () => {
 });
 
 test("parseTime(formatTime(m)) round-trips for every valid minute", () => {
-  fc.assert(
-    fc.property(
-      fc.integer({ min: 0, max: 1439 }),
-      (m) => parseTime(formatTime(m)) === m,
-    ),
-  );
+  for (let m = 0; m < 1440; m++) {
+    expect(parseTime(formatTime(m))).toBe(m);
+  }
 });
