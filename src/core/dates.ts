@@ -39,3 +39,38 @@ export function dayOfWeek(value: string): DayOfWeek {
     Date.UTC(parts.year, parts.month - 1, parts.day),
   ).getUTCDay() as DayOfWeek;
 }
+
+const MS_PER_DAY = 86_400_000;
+
+/** Tanggal kalender lokal perangkat dari `now`, format YYYY-MM-DD. */
+export function toDateString(now: Date): string {
+  if (Number.isNaN(now.getTime())) {
+    throw new RangeError("Invalid Date");
+  }
+  const result = [
+    String(now.getFullYear()).padStart(4, "0"),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0"),
+  ].join("-");
+  if (!isValidDate(result)) {
+    throw new RangeError(`Date out of supported range: ${result}`);
+  }
+  return result;
+}
+
+/** Selisih hari kalender dari `from` ke `to` (negatif bila `to` lebih awal). */
+export function daysBetween(from: string, to: string): number {
+  const a = parseDate(from);
+  const b = parseDate(to);
+  if (!a)
+    throw new RangeError(
+      `Invalid date "${from}", expected a real YYYY-MM-DD date`,
+    );
+  if (!b)
+    throw new RangeError(
+      `Invalid date "${to}", expected a real YYYY-MM-DD date`,
+    );
+  const diff =
+    Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day);
+  return diff / MS_PER_DAY;
+}
