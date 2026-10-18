@@ -53,7 +53,7 @@ function assertBudgets(settings: UserSettings): void {
   }
 }
 
-function assertPomodoroCounts(task: Task): void {
+export function assertPomodoroCounts(task: Task): void {
   const ok = (n: number) => Number.isInteger(n) && n >= 0;
   if (!ok(task.estimatedPomodoros) || !ok(task.completedPomodoros)) {
     throw new RangeError(
