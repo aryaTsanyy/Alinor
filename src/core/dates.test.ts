@@ -1,6 +1,12 @@
 import { describe, test, expect } from "vitest";
 import fc from "fast-check";
-import { isValidDate, dayOfWeek, daysBetween, toDateString } from "./dates";
+import {
+  isValidDate,
+  dayOfWeek,
+  daysBetween,
+  toDateString,
+  addDays,
+} from "./dates";
 
 describe("isValidDate", () => {
   test.each(["2026-10-18", "2024-02-29", "2000-02-29", "1999-12-31"])(
@@ -107,5 +113,49 @@ describe("toDateString", () => {
 
   test("throws on an invalid Date", () => {
     expect(() => toDateString(new Date(NaN))).toThrow(RangeError);
+  });
+});
+
+describe("addDays", () => {
+  test.each([
+    ["2026-10-19", 0, "2026-10-19"],
+    ["2026-10-19", 1, "2026-10-20"],
+    ["2026-10-19", 12, "2026-10-31"],
+    ["2026-10-19", 13, "2026-11-01"],
+    ["2026-10-19", -18, "2026-10-01"],
+    ["2026-10-19", -19, "2026-09-30"],
+    ["2024-02-28", 1, "2024-02-29"], // tahun kabisat
+    ["2025-02-28", 1, "2025-03-01"],
+    ["2026-12-31", 1, "2027-01-01"],
+    ["2027-01-01", -1, "2026-12-31"],
+  ])("%s + %i days = %s", (from, days, expected) => {
+    expect(addDays(from, days)).toBe(expected);
+  });
+
+  test("property: agrees with day offsets and with daysBetween", () => {
+    fc.assert(
+      fc.property(
+        fc
+          .tuple(
+            fc.integer({ min: 0, max: 36500 }),
+            fc.integer({ min: -400, max: 400 }),
+          )
+          .filter(([k, n]) => k + n >= 0),
+        ([k, n]) => {
+          const base = isoFromOffset(k);
+          expect(addDays(base, n)).toBe(isoFromOffset(k + n));
+          expect(daysBetween(base, addDays(base, n))).toBe(n);
+        },
+      ),
+    );
+  });
+
+  test.each([
+    ["2026-02-30", 1],
+    ["", 1],
+    ["2026-10-19", 1.5],
+    ["2026-10-19", NaN],
+  ])("throws on invalid input (%j, %j)", (from, days) => {
+    expect(() => addDays(from, days)).toThrow(RangeError);
   });
 });

@@ -74,3 +74,28 @@ export function daysBetween(from: string, to: string): number {
     Date.UTC(b.year, b.month - 1, b.day) - Date.UTC(a.year, a.month - 1, a.day);
   return diff / MS_PER_DAY;
 }
+
+/** Menambah (atau mengurangi, bila negatif) hari kalender pada tanggal YYYY-MM-DD. */
+export function addDays(value: string, days: number): string {
+  const parts = parseDate(value);
+  if (!parts) {
+    throw new RangeError(
+      `Invalid date "${value}", expected a real YYYY-MM-DD date`,
+    );
+  }
+  if (!Number.isInteger(days)) {
+    throw new RangeError("days must be an integer");
+  }
+  const moved = new Date(
+    Date.UTC(parts.year, parts.month - 1, parts.day + days),
+  );
+  const result = [
+    String(moved.getUTCFullYear()).padStart(4, "0"),
+    String(moved.getUTCMonth() + 1).padStart(2, "0"),
+    String(moved.getUTCDate()).padStart(2, "0"),
+  ].join("-");
+  if (!isValidDate(result)) {
+    throw new RangeError(`Date out of supported range: ${result}`);
+  }
+  return result;
+}
