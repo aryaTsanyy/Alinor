@@ -72,6 +72,7 @@ export interface PomodoroSession {
   endedAt: string;
   completed: boolean;
   quadrantAtTime: Quadrant;
+  allocationId?: string; // alokasi tempat sesi ini dijalankan, bila ada
 }
 
 export interface Slot {
