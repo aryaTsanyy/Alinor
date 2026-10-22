@@ -120,6 +120,7 @@ export interface StorageRepository {
   loadSessions(): Promise<LoadResult<PomodoroSession[]>>;
   /** Idempoten menurut id sesi. Menolak menimpa log yang tidak terbaca. */
   appendSession(session: PomodoroSession): Promise<void>;
+  resetSessions(): Promise<void>;
 }
 
 export function createStorageRepository(kv: KeyValueStore): StorageRepository {
@@ -139,6 +140,7 @@ export function createStorageRepository(kv: KeyValueStore): StorageRepository {
     savePlanning: (data) =>
       serialize(() => saveStored(kv, PLANNING_FORMAT, data)),
     loadSessions: () => serialize(() => loadStored(kv, SESSIONS_FORMAT)),
+    resetSessions: () => serialize(() => saveStored(kv, SESSIONS_FORMAT, [])),
     appendSession: (session) =>
       serialize(async () => {
         const single = SESSIONS_FORMAT.validate([session]);

@@ -168,6 +168,23 @@ describe("createStorageRepository", () => {
     expect(await repo.loadPlanning()).toEqual({ status: "empty" });
     expect(await repo.loadSessions()).toEqual({ status: "empty" });
   });
+  test("resetSessions replaces an unreadable log with an empty one and keeps the backup", async () => {
+    const kv = createMemoryKv({ "alinor:sessions": "{not json" });
+    const repo = createStorageRepository(kv);
+    expect((await repo.loadSessions()).status).toBe("invalid");
+    await repo.resetSessions();
+    expect(dataOf(await repo.loadSessions())).toEqual([]);
+    expect(backupKeys(kv, "alinor:backup:sessions:")).toHaveLength(1);
+  });
+
+  test("appending works again after a reset", async () => {
+    const repo = createStorageRepository(
+      createMemoryKv({ "alinor:sessions": "{not json" }),
+    );
+    await repo.resetSessions();
+    await repo.appendSession(sampleSession("s1"));
+    expect(dataOf(await repo.loadSessions()).map((s) => s.id)).toEqual(["s1"]);
+  });
 
   test("planning data round-trips", async () => {
     const repo = createStorageRepository(createMemoryKv());
