@@ -7,14 +7,12 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 
 - Branch per phase: `feat/store`, `feat/ui-shell`, and so on. Never commit to `main` directly.
 - Read `node_modules/next/dist/docs/` before writing Next.js code (see `AGENTS.md`).
-- Use relative imports until the alias task below is done.
 - If a decision is not covered here or in `CLAUDE.md`, ask instead of guessing.
 
 ## Phase 0: Baseline
 
 - [x] `pnpm install`, `pnpm test:run`, `pnpm lint` all pass on a clean checkout. Report any failure before changing code.
-- [ ] Confirm `src/storage/` (written without being able to run vitest) passes its 4 tests. Fix the code, not the tests, unless a test is wrong.
-- [ ] Commit `CLAUDE.md` and `TASKS.md` as `docs:`, and `src/storage/` as `feat(storage):` plus `test(storage):`, if not yet committed.
+- [x] `src/storage/` was dropped in favor of `src/repository/` + `src/store/` (data-integrity rules proven by tests there); `CLAUDE.md` and `TASKS.md` committed as `docs:`.
 
 ## Phase 1: Tooling fixes (`chore/tooling`)
 
@@ -25,15 +23,18 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 ## Phase 2: Zustand store (`feat/store`)
 
 - [x] `pnpm add zustand`.
-- [ ] Define store state: `AppSnapshot` fields plus `hydrated: boolean`, `now` source, `warnings` (allocation and feasibility), `error` (including `StorageCorruptError`).
-- [ ] Actions, each with tests: add, update, delete task; complete a task; set `isImportant` and `urgencyOverride`; add, update, delete schedule rule; add `CANCELLED` exception; update settings.
+- [x] Define store state (`src/store/types.ts`): `PlanningData` fields plus `sessions`, `sessionsStatus`, `lastActiveDate`, `hydration` (`idle`, `loading`, `ready`, `needs-attention`), `issues`, `loadError`, `persistError`. `now` comes from the injected `clock`. Warnings (allocation, collisions) are returned by the actions, not stored; feasibility is a selector.
+- [x] Actions, each with tests: `addTask`, `updateTask`, `removeTask`, `markTaskDone`; `addRule`, `updateRule`, `removeRule`; `cancelOccurrence` (`CANCELLED` exception) and `restoreOccurrence`; `updateSettings`.
+- [ ] Add a test that changes `isImportant` and `urgencyOverride` via `updateTask`.
 - [x] Derived selectors (not stored): quadrant per task via `deriveTaskQuadrant`, today's free slots via `calculateFreeSlots`, feasibility via `computeFeasibility`.
-- [ ] Planning actions: `autoFillToday` (`generateAutoAllocations`), `resolveCollisions` after any schedule change, `rolloverIfNewDay` (`rolloverAllocations`). `now` is always injected, never read inside `src/core/`.
-- [ ] Session actions: start, finish, and abandon a Pomodoro session; update `completedPomodoros` and allocation status consistently (use `getStartedAllocationIds`).
-- [ ] Persistence: `hydrate()` loads through `Repository`, `null` means `emptySnapshot()`. Save after every mutation (debounced). Corrupt data surfaces as `error` and must not overwrite the stored data.
-- [ ] Input validation at the store boundary (non-negative integer pomodoros, valid dates and times). Core throws on bad input; the store turns that into a user-facing error and does not crash.
-- [ ] Tests use `createMemoryStorage` and a fixed `now`. Add a property test that save then hydrate restores the same state.
-- [ ] Test berparameter yang membuktikan semua aksi store ditolak di status needs-attention (saat ini hanya addTask yang dites).
+- [x] Planning actions: `autoFillToday` (`generateAutoAllocations`); `resolveCollisions` after every schedule change (rules, occurrences, settings). There is no `rolloverIfNewDay` action: `rolloverAllocations` runs automatically in `hydrate()` and before every data-changing action (`begin()`). `now` is always injected, never read inside `src/core/`.
+- [x] Session actions: `completePomodoro` (including the abandoned status) exists; it updates `completedPomodoros` and allocation status consistently (via `getStartedAllocationIds`).
+- [ ] DECISION PENDING (owner): does the store record a session start (e.g. to recover an interrupted session)? Decide before Phase 3.
+- [x] Persistence: `hydrate()` loads through `StorageRepository`, which returns a `LoadResult` (`empty`, `ok`, `invalid`); `empty` means `emptyPlanningData()`. Every mutation saves. Corrupt data is backed up, puts the store in `needs-attention`, and is never overwritten.
+- [ ] DECISION PENDING (owner): debounce saves or keep saving on every mutation.
+- [x] Input validation at the store boundary (non-negative integer pomodoros, valid dates and times): the store rejects bad input with `InvalidDataError` and leaves state and storage untouched.
+- [ ] Tests use `createMemoryKv` and a fixed `now`. Add a property test that save then hydrate restores the same state.
+- [ ] Parameterized test proving every data-changing store action is rejected in `needs-attention` (today only `addTask` is tested).
 
 ## Phase 3: App shell (`feat/ui-shell`)
 
@@ -41,6 +42,7 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 - [ ] Design tokens in `globals.css`: Pantone blue palette, glass surfaces (blur, translucent border, soft shadow), light and dark, readable contrast (check WCAG AA).
 - [ ] Layout and navigation: Today, Tasks, Schedule, Settings. Mobile first.
 - [ ] Replace the create-next-app template in `src/app/page.tsx`. Remove unused template assets in `public/`.
+- [ ] Turn store errors (`InvalidDataError`, `StoreNotReadyError`, `SessionsUnavailableError`, `persistError`) into plain-language messages; the UI does not crash.
 
 ## Phase 4: Features (one branch each)
 
