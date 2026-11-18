@@ -12,6 +12,7 @@ Work plan: `TASKS.md` (phases and checklist). Visual spec: `DESIGN.md` (create i
 pnpm install
 pnpm test:run   # vitest: unit + property-based (fast-check)
 pnpm lint
+pnpm typecheck  # next typegen && tsc --noEmit
 pnpm dev
 ```
 
@@ -20,9 +21,10 @@ Run `pnpm test:run` and `pnpm lint` before saying a change is done, plus `pnpm b
 ## Architecture
 
 - `src/core/` is the planning engine: pure TypeScript, no I/O. It is finished and heavily tested. Do not change its behavior without a failing test first.
-- `src/storage/` is the persistence layer: a versioned `AppSnapshot`, an async `Repository` interface, and a localStorage implementation. Corrupt data throws `StorageCorruptError`; never silently reset. It was written without being able to run vitest, so treat it as unverified until `TASKS.md` Phase 0 passes.
-- `src/app/` is the Next.js UI (App Router). `page.tsx` is still the create-next-app template.
-- Planned next: Zustand store in `src/store/`, then UI (matrix, free-slot day view, Pomodoro timer), then PWA/push/calendar import.
+- `src/repository/` is the persistence layer: a `KeyValueStore` (localStorage or in-memory), versioned envelopes with migrations, zod schemas, and `createStorageRepository`. Planning data lives under `alinor:data`, the Pomodoro session log under `alinor:sessions`. Data that fails to parse, migrate or validate is copied to `alinor:backup:*` and reported as `{ status: "invalid" }`; the original is never overwritten. Saving invalid data throws `InvalidDataError`.
+- `src/store/` is a Zustand vanilla store (`createAlinorStore`, with `repository`, `clock` and `newId` injected) plus derived selectors in `selectors.ts`. `hydration` is `idle`, `loading`, `ready` or `needs-attention`. Unreadable planning data or a storage failure on load puts the store in `needs-attention`, where every data-changing action throws `StoreNotReadyError`. An unreadable session log keeps the store `ready` but marks sessions `unavailable` and refuses to record new ones. Stored data is replaced only through an explicit `resolveStorageIssue("reset")`, and the backup stays.
+- `src/app/` is the Next.js 16.4.5 UI (App Router). `page.tsx` is still the create-next-app template.
+- Planned next: UI on top of `src/store/` (nothing in `src/app/` uses it yet): matrix, free-slot day view, Pomodoro timer, then PWA/push/calendar import.
 
 ## Engine rules (enforced by ESLint on `src/core/`)
 
@@ -40,7 +42,6 @@ Run `pnpm test:run` and `pnpm lint` before saying a change is done, plus `pnpm b
 ## Conventions
 
 - Strict TypeScript. Tests sit next to the source as `*.test.ts`; use hand-computed expectations for examples and fast-check for invariants.
-- The `@/*` alias in `tsconfig.json` currently points to `./*`, not `./src/*`, and vitest has no alias. Use relative imports until that is fixed. Delete this line once `TASKS.md` Phase 1 is done.
 - Do not add dependencies, disable lint rules, add `any`, or weaken tests to make something pass. Ask first.
 
 ## Git workflow
@@ -59,5 +60,5 @@ Run `pnpm test:run` and `pnpm lint` before saying a change is done, plus `pnpm b
 
 ## Open decisions
 
-- Default `UserSettings` live in `src/storage/defaults.ts` and were chosen from the README example, not yet confirmed by the owner.
+- Default `UserSettings` live in `src/repository/data.ts` (`DEFAULT_SETTINGS`) and were chosen from the README example, not yet confirmed by the owner.
 - Known engine limits: Pomodoro cycle restarts in every gap, first-fit placement can fragment long Q2 tasks, no per-task daily limit.

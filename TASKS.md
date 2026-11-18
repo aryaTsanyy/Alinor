@@ -12,27 +12,28 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 
 ## Phase 0: Baseline
 
-- [ ] `pnpm install`, `pnpm test:run`, `pnpm lint` all pass on a clean checkout. Report any failure before changing code.
+- [x] `pnpm install`, `pnpm test:run`, `pnpm lint` all pass on a clean checkout. Report any failure before changing code.
 - [ ] Confirm `src/storage/` (written without being able to run vitest) passes its 4 tests. Fix the code, not the tests, unless a test is wrong.
 - [ ] Commit `CLAUDE.md` and `TASKS.md` as `docs:`, and `src/storage/` as `feat(storage):` plus `test(storage):`, if not yet committed.
 
 ## Phase 1: Tooling fixes (`chore/tooling`)
 
-- [ ] `chore:` make `@/*` resolve to `./src/*` in `tsconfig.json` and mirror it in `vitest.config.mts`. Verify the ESLint ban on `@/store/*` and `@/components/*` inside `src/core/` still fires (add a throwaway import, confirm the error, remove it).
-- [ ] `chore:` add `pnpm typecheck` (`tsc --noEmit`) to scripts. Confirm the build is clean with `pnpm build`.
+- [x] `chore:` make `@/*` resolve to `./src/*` in `tsconfig.json` and mirror it in `vitest.config.mts`. Verify the ESLint ban on `@/store/*` and `@/components/*` inside `src/core/` still fires (add a throwaway import, confirm the error, remove it).
+- [x] `chore:` add `pnpm typecheck` (`next typegen && tsc --noEmit`) to scripts. Confirm the build is clean with `pnpm build`.
 - [ ] Replace the placeholder metadata in `src/app/layout.tsx` (title, description) with Alinor's.
 
 ## Phase 2: Zustand store (`feat/store`)
 
-- [ ] `pnpm add zustand`.
+- [x] `pnpm add zustand`.
 - [ ] Define store state: `AppSnapshot` fields plus `hydrated: boolean`, `now` source, `warnings` (allocation and feasibility), `error` (including `StorageCorruptError`).
 - [ ] Actions, each with tests: add, update, delete task; complete a task; set `isImportant` and `urgencyOverride`; add, update, delete schedule rule; add `CANCELLED` exception; update settings.
-- [ ] Derived selectors (not stored): quadrant per task via `deriveTaskQuadrant`, today's free slots via `calculateFreeSlots`, feasibility via `computeFeasibility`.
+- [x] Derived selectors (not stored): quadrant per task via `deriveTaskQuadrant`, today's free slots via `calculateFreeSlots`, feasibility via `computeFeasibility`.
 - [ ] Planning actions: `autoFillToday` (`generateAutoAllocations`), `resolveCollisions` after any schedule change, `rolloverIfNewDay` (`rolloverAllocations`). `now` is always injected, never read inside `src/core/`.
 - [ ] Session actions: start, finish, and abandon a Pomodoro session; update `completedPomodoros` and allocation status consistently (use `getStartedAllocationIds`).
 - [ ] Persistence: `hydrate()` loads through `Repository`, `null` means `emptySnapshot()`. Save after every mutation (debounced). Corrupt data surfaces as `error` and must not overwrite the stored data.
 - [ ] Input validation at the store boundary (non-negative integer pomodoros, valid dates and times). Core throws on bad input; the store turns that into a user-facing error and does not crash.
 - [ ] Tests use `createMemoryStorage` and a fixed `now`. Add a property test that save then hydrate restores the same state.
+- [ ] Test berparameter yang membuktikan semua aksi store ditolak di status needs-attention (saat ini hanya addTask yang dites).
 
 ## Phase 3: App shell (`feat/ui-shell`)
 
