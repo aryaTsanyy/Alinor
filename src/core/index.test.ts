@@ -19,6 +19,7 @@ test("the public API surface is exactly what we intend to expose", () => {
       "isValidDate",
       "parseTime",
       "pomodoroBlockMinutes",
+      "reconcile",
       "resolveCollisions",
       "rolloverAllocations",
       "toDateString",

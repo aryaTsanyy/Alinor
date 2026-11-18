@@ -25,6 +25,12 @@ export type { FeasibilityInput } from "./feasibility";
 export { resolveCollisions } from "./collisions";
 export type { CollisionInput } from "./collisions";
 export { rolloverAllocations } from "./rollover";
+export { reconcile } from "./reconcile";
+export type {
+  ReconcileInput,
+  ReconcileChange,
+  ReconcileResult,
+} from "./reconcile";
 export { getStartedAllocationIds } from "./sessions";
 export type {
   DayOfWeek,
