@@ -39,7 +39,7 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 ## Phase 3: App shell (`feat/ui-shell`)
 
 - [ ] Client-only hydration boundary: `localStorage` is touched only in the browser. No hydration mismatch warnings.
-- [ ] Design tokens in `globals.css`: Pantone blue palette, glass surfaces (blur, translucent border, soft shadow), light and dark, readable contrast (check WCAG AA).
+- [ ] Design tokens in `globals.css` as specified in `DESIGN.md` (sections b, d, e): light and dark palette tokens, glass surfaces with opaque fallbacks, focus ring with offset. Re-run the contrast check if any token changes.
 - [ ] Add `lucide-react` (dependency approved by the owner) and map the quadrant and warning icons from `DESIGN.md` section g to real lucide icon names (verify they exist).
 - [ ] Replace the `Arial` font override in `globals.css` with Geist (`var(--font-sans)`), as decided in `DESIGN.md`.
 - [ ] Layout and navigation: Today, Tasks, Schedule, Settings. Mobile first.
