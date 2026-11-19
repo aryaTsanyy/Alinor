@@ -40,6 +40,8 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 
 - [ ] Client-only hydration boundary: `localStorage` is touched only in the browser. No hydration mismatch warnings.
 - [ ] Design tokens in `globals.css`: Pantone blue palette, glass surfaces (blur, translucent border, soft shadow), light and dark, readable contrast (check WCAG AA).
+- [ ] Add `lucide-react` (dependency approved by the owner) and map the quadrant and warning icons from `DESIGN.md` section g to real lucide icon names (verify they exist).
+- [ ] Replace the `Arial` font override in `globals.css` with Geist (`var(--font-sans)`), as decided in `DESIGN.md`.
 - [ ] Layout and navigation: Today, Tasks, Schedule, Settings. Mobile first.
 - [ ] Replace the create-next-app template in `src/app/page.tsx`. Remove unused template assets in `public/`.
 - [ ] Turn store errors (`InvalidDataError`, `StoreNotReadyError`, `SessionsUnavailableError`, `persistError`) into plain-language messages; the UI does not crash.
