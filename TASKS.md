@@ -34,7 +34,7 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 - [ ] DECISION PENDING (owner): debounce saves or keep saving on every mutation.
 - [x] Input validation at the store boundary (non-negative integer pomodoros, valid dates and times): the store rejects bad input with `InvalidDataError` and leaves state and storage untouched.
 - [ ] Tests use `createMemoryKv` and a fixed `now`. Add a property test that save then hydrate restores the same state.
-- [ ] Parameterized test proving every data-changing store action is rejected in `needs-attention` (today only `addTask` is tested).
+- [x] Parameterized test proving every data-changing store action is rejected in `needs-attention` (`src/store/store.test.ts`, "needs-attention gate").
 
 ## Phase 3: App shell (`feat/ui-shell`)
 
