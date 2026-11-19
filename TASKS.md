@@ -18,7 +18,7 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 
 - [x] `chore:` make `@/*` resolve to `./src/*` in `tsconfig.json` and mirror it in `vitest.config.mts`. Verify the ESLint ban on `@/store/*` and `@/components/*` inside `src/core/` still fires (add a throwaway import, confirm the error, remove it).
 - [x] `chore:` add `pnpm typecheck` (`next typegen && tsc --noEmit`) to scripts. Confirm the build is clean with `pnpm build`.
-- [ ] Replace the placeholder metadata in `src/app/layout.tsx` (title, description) with Alinor's.
+- [x] Replace the placeholder metadata in `src/app/layout.tsx` (title, description) with Alinor's.
 
 ## Phase 2: Zustand store (`feat/store`)
 
