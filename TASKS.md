@@ -29,9 +29,9 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 - [x] Derived selectors (not stored): quadrant per task via `deriveTaskQuadrant`, today's free slots via `calculateFreeSlots`, feasibility via `computeFeasibility`.
 - [x] Planning actions: `autoFillToday` (`generateAutoAllocations`); `resolveCollisions` after every schedule change (rules, occurrences, settings). There is no `rolloverIfNewDay` action: `rolloverAllocations` runs automatically in `hydrate()` and before every data-changing action (`begin()`). `now` is always injected, never read inside `src/core/`.
 - [x] Session actions: `completePomodoro` (including the abandoned status) exists; it updates `completedPomodoros` and allocation status consistently (via `getStartedAllocationIds`).
-- [ ] DECISION PENDING (owner): does the store record a session start (e.g. to recover an interrupted session)? Decide before Phase 3.
+- [x] Decided (owner, 2026-11-19): the store does not record a session start for now; wanted later (add a `startPomodoro` action and persist the running session through a schema migration). The timer derives remaining time from timestamps (`DESIGN.md` section h), so adding this later stays cheap.
 - [x] Persistence: `hydrate()` loads through `StorageRepository`, which returns a `LoadResult` (`empty`, `ok`, `invalid`); `empty` means `emptyPlanningData()`. Every mutation saves. Corrupt data is backed up, puts the store in `needs-attention`, and is never overwritten.
-- [ ] DECISION PENDING (owner): debounce saves or keep saving on every mutation.
+- [x] Decided (owner, 2026-11-19): save on every mutation, no debounce.
 - [x] Input validation at the store boundary (non-negative integer pomodoros, valid dates and times): the store rejects bad input with `InvalidDataError` and leaves state and storage untouched.
 - [ ] Tests use `createMemoryKv` and a fixed `now`. Add a property test that save then hydrate restores the same state.
 - [x] Parameterized test proving every data-changing store action is rejected in `needs-attention` (`src/store/store.test.ts`, "needs-attention gate").
@@ -39,7 +39,9 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 ## Phase 3: App shell (`feat/ui-shell`)
 
 - [ ] Client-only hydration boundary: `localStorage` is touched only in the browser. No hydration mismatch warnings.
-- [ ] Design tokens in `globals.css`: Pantone blue palette, glass surfaces (blur, translucent border, soft shadow), light and dark, readable contrast (check WCAG AA).
+- [ ] Design tokens in `globals.css` as specified in `DESIGN.md` (sections b, d, e): light and dark palette tokens, glass surfaces with opaque fallbacks, focus ring with offset. Re-run the contrast check if any token changes.
+- [ ] Add `lucide-react` (dependency approved by the owner) and map the quadrant and warning icons from `DESIGN.md` section g to real lucide icon names (verify they exist).
+- [ ] Replace the `Arial` font override in `globals.css` with Geist (`var(--font-sans)`), as decided in `DESIGN.md`.
 - [ ] Layout and navigation: Today, Tasks, Schedule, Settings. Mobile first.
 - [ ] Replace the create-next-app template in `src/app/page.tsx`. Remove unused template assets in `public/`.
 - [ ] Turn store errors (`InvalidDataError`, `StoreNotReadyError`, `SessionsUnavailableError`, `persistError`) into plain-language messages; the UI does not crash.

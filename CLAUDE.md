@@ -4,7 +4,7 @@
 
 Opinionated daily planner for students who also work: fixed schedule -> effective free slots -> derived Eisenhower quadrants -> auto-allocation -> task-bound Pomodoro. See README.md for the full idea and a worked day.
 
-Work plan: `TASKS.md` (phases and checklist). Visual spec: `DESIGN.md` (create it before Phase 3; all UI must follow it).
+Work plan: `TASKS.md` (phases and checklist). Visual spec: `DESIGN.md` (exists; all UI must follow it).
 
 ## Commands
 
@@ -53,7 +53,7 @@ Run `pnpm test:run` and `pnpm lint` before saying a change is done, plus `pnpm b
 
 ## UI workflow (Phase 3 onward)
 
-- Follow `DESIGN.md`. Direction: Pantone blue, glassmorphism only on cards and panels (not whole screens), light and dark, WCAG AA contrast.
+- Direction: navy / cream / coral palette with sky blue #98D3F3 as the brand colour, glassmorphism only on cards and panels (not whole screens), light and dark, WCAG AA contrast. Full spec: `DESIGN.md`.
 - After each UI feature: run `pnpm dev`, check `localhost:3000` with `playwright-cli` at mobile and desktop widths in light and dark, fix what breaks, then review with `web-design-guidelines` and fix its findings.
 - Derived and unsupported states must be visible in the UI (Q1 overflow, feasibility shortfall, unsupported schedule cases), never hidden.
 - Do not edit the generated block in `AGENTS.md`. Read `node_modules/next/dist/docs/` before writing Next.js code, because this Next version differs from older ones.
