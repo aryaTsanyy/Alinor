@@ -2,7 +2,7 @@
 
 An opinionated daily planner that answers the question calendars and to-do apps skip: _given my fixed schedule, when can I actually do the important work?_
 
-> **Status:** the planning engine is complete and tested. The store, persistence and UI (Pantone blue, glassmorphism) are next.
+> **Status:** the planning engine, the persistence layer and the Zustand store are complete and tested. The UI (navy / cream / coral palette with sky blue #98D3F3 as the brand colour, glassmorphism) is next.
 
 ## The problem
 
