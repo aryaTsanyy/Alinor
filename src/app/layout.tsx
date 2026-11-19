@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Alinor",
   description:
-    "An opinionated daily planner that answers the question calendars and to-do apps skip: given my fixed schedule, when can I actually do the important work?",
+    "Daily planner opinionated yang menjawab pertanyaan yang dilewatkan kalender dan aplikasi to-do: dengan jadwal tetapku, kapan aku benar-benar bisa mengerjakan hal penting?",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
-      lang="en"
+      lang="id"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
