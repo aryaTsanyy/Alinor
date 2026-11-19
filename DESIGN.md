@@ -2,7 +2,7 @@
 
 Dokumen ini wajib diikuti oleh semua UI mulai Phase 3 (lihat `CLAUDE.md` dan `TASKS.md`). Bahasa antarmuka: Indonesia. Istilah kode (nama token, komponen, status store) tetap dalam bahasa Inggris.
 
-Bagian yang belum diputuskan pemilik ada di "Usulan untuk persetujuan pemilik" dan "Pertanyaan terbuka". Jangan diimplementasikan sebagai final sebelum diputuskan.
+Keputusan pemilik dicatat di "Keputusan pemilik (2026-11-19)". Hal yang belum diputuskan ada di "Pertanyaan terbuka", dan tidak boleh diimplementasikan sebagai final sebelum diputuskan.
 
 ## a. Prinsip dan batas
 
@@ -79,7 +79,7 @@ Varian turunan dihitung dengan script: hue dan saturasi tetap, lalu lightness di
 | `--brand-ink` | `#98D3F3` | Tautan, teks bernuansa merek |
 | `--focus` | `#98D3F3` | Focus ring |
 
-Token didaftarkan ke Tailwind 4 lewat `@theme inline` di `globals.css` (pola yang sudah ada untuk `--background` dan `--foreground`). Contohnya `--color-accent: var(--accent)`, supaya kelas seperti `bg-accent` dan `text-accent-ink` tersedia. Cara memilih mode (ikut sistem atau toggle manual) masih pertanyaan terbuka.
+Token didaftarkan ke Tailwind 4 lewat `@theme inline` di `globals.css` (pola yang sudah ada untuk `--background` dan `--foreground`). Contohnya `--color-accent: var(--accent)`, supaya kelas seperti `bg-accent` dan `text-accent-ink` tersedia. Mode mengikuti sistem lewat `prefers-color-scheme`, tanpa toggle manual dan tanpa preferensi tersimpan (Keputusan pemilik, nomor 3).
 
 ## c. Tabel kontras
 
@@ -279,7 +279,7 @@ Skala bawaan Tailwind (kelipatan 4px). Padding kartu `p-4` di mobile dan `p-6` d
 | `md` | ≥ 768px | Belum ditentukan |
 | `lg` | ≥ 1024px | Belum ditentukan |
 
-Navigasi memuat empat bagian: Today, Tasks, Schedule, Settings (`TASKS.md` Phase 3, "Layout and navigation"). Tata letak per titik henti, posisi navigasi, dan label tampilan berbahasa Indonesia masih usulan (lihat "Usulan untuk persetujuan pemilik", nomor 5).
+Navigasi memuat empat bagian: Today, Tasks, Schedule, Settings (`TASKS.md` Phase 3, "Layout and navigation"). Tata letak per titik henti, posisi navigasi, dan label tampilan berbahasa Indonesia masih usulan (lihat "Pertanyaan terbuka", nomor 3).
 
 Target sentuh minimum 44×44px. Ini lebih besar dari minimum 24×24px di WCAG 2.2 AA.
 
@@ -313,7 +313,7 @@ Kuadran selalu tampil sebagai lencana dengan **kode, label dan ikon**. Warna han
 | Q3 | Q3 · Mendesak, tidak penting | Jam | Outline 1px solid `--text`, teks `--text` |
 | Q4 | Q4 · Tidak penting, tidak mendesak | Lingkaran minus | Outline 1px dashed `--text-muted`, teks `--text-muted` |
 
-Labelnya diturunkan dari definisi matriks, bukan nama aksi. Nama aksi (mis. "Kerjakan", "Jadwalkan") masih pertanyaan terbuka. Alasan kuadran (jarak ke tenggat, override) tampil sebagai teks di dekat lencana, bukan di tooltip saja.
+Labelnya diturunkan dari definisi matriks, tanpa nama aksi (Keputusan pemilik, nomor 4). Alasan kuadran (jarak ke tenggat, override) tampil sebagai teks di dekat lencana, bukan di tooltip saja.
 
 ### Peringatan
 
@@ -326,7 +326,7 @@ Keempat peringatan wajib dibedakan lewat **ikon dan teks**, tidak lewat warna sa
 | Kasus tak didukung | Acara melewati tengah malam: store menolak dengan `InvalidDataError` ("endTime must be after startTime"); exception `MODIFIED`: engine melempar error | Lingkaran dicoret | "Belum didukung" | "Acara yang melewati tengah malam belum didukung. Jadwal ini tidak disimpan." | `--surface-solid`, garis kiri 4px `--brand-ink`, ikon `--brand-ink` |
 | `needs-attention` | Store `hydration: "needs-attention"` | Perisai dengan tanda seru | "Data tidak bisa dibaca" | Lihat bagian i | Fill `--accent` opak, teks `--on-accent`, `role="alert"`, tidak bisa ditutup |
 
-Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pembedanya ikon dan judul. Warna khusus per tingkat keparahan ada di usulan.
+Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pembedanya ikon dan judul. Tidak ada warna khusus per tingkat keparahan (Keputusan pemilik, nomor 2).
 
 ## h. Aturan timer
 
@@ -352,27 +352,22 @@ Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pem
    - Tombol: "Batal" mendapat fokus awal. "Ya, mulai dari kosong" memakai gaya tombol primer di dalam dialog. Esc sama dengan Batal. Fokus terkunci di dalam dialog dan kembali ke tombol pemicu setelah ditutup.
 4. **`persistError`.** Banner `role="status"`: "Perubahan terakhir belum tersimpan. Alinor akan mencoba lagi saat ada perubahan berikutnya." Pesan ini sesuai perilaku store, yang mencoba lagi pada save berikutnya.
 
-## Usulan untuk persetujuan pemilik
+## Keputusan pemilik (2026-11-19)
 
-Hal-hal berikut belum final dan perlu persetujuan:
+1. **Ikon:** `lucide-react`. Dependensi baru ini disetujui dan dipasang di Phase 3 dengan `pnpm add`. Pemetaan bentuk ikon di bagian g ke nama ikon lucide ditentukan setelah paket terpasang dan setiap nama sudah diverifikasi ada. Nama ikon belum ditetapkan di dokumen ini.
+2. **Warna semantik tambahan** (hijau, amber): tidak ditambah. Keempat peringatan dibedakan lewat ikon, teks dan garis kiri (bagian g). Ditinjau ulang bila UI terasa ambigu.
+3. **Tema:** ikut sistem (`prefers-color-scheme`). Tidak ada toggle manual dan tidak ada preferensi tema yang disimpan.
+4. **Label kuadran:** label definisi saja (bagian g), tanpa nama aksi.
+5. **Jeda (pause) timer:** tidak ada. Ini konsisten dengan tidak merekam awal sesi.
+6. **Font body:** Geist. Override `Arial` di `globals.css` diganti `var(--font-sans)` pada Phase 3.
+7. **Bahasa antarmuka:** Indonesia, `lang="id"`.
 
-1. **Warna semantik di luar palet.** Palet empat warna tidak punya warna "berhasil" (hijau) atau "peringatan ringan" (amber), jadi Q1 overflow, feasibility dan `needs-attention` semuanya bergantung pada coral. Usulan: tambahkan satu warna peringatan dan satu warna berhasil, masing-masing dengan varian `-ink`, dan hitung kontrasnya dengan cara yang sama sebelum dipakai. Sampai disetujui, pakai aturan di bagian g.
-2. **Sumber ikon.** Repo belum punya pustaka ikon. Ada dua pilihan:
-   - SVG inline yang dibuat sendiri (tanpa dependensi), atau
-   - dependensi seperti `lucide-react` (perlu persetujuan, karena `CLAUDE.md` melarang menambah dependensi tanpa izin).
-   Bentuk ikon di bagian g berlaku untuk kedua pilihan.
-3. **Font body.** `src/app/globals.css` saat ini menimpa font dengan `font-family: Arial, Helvetica, sans-serif` pada `body`, padahal Geist sudah dimuat. Usulan untuk Phase 3: pakai `var(--font-sans)`.
-4. **Bahasa dokumen.** Diputuskan pemilik: antarmuka berbahasa Indonesia. Penerapan `lang="id"` di `src/app/layout.tsx` **belum dilakukan**. Branch `chore/app-metadata` hanya mengganti `title` dan `description`, dan `lang` di sana masih `"en"`.
-5. **Navigasi dan tata letak per titik henti.** Tidak ada di `TASKS.md` maupun `CLAUDE.md`, jadi belum final:
+## j. Pertanyaan terbuka
+
+1. **Dialog di mode dark:** apakah scrim `rgb(20 33 61 / 0.45)` cukup terlihat di atas latar navy, atau dialog dark perlu border `--surface-glass-border` yang lebih tegas? Uji di browser pada Phase 3.
+2. **Notifikasi dalam aplikasi** (Phase 4): apakah memakai banner yang sama, atau komponen toast terpisah? Toast tidak dibahas di dokumen ini.
+3. **Navigasi dan tata letak per titik henti.** Tidak ada di `TASKS.md` maupun `CLAUDE.md`, jadi belum final. Usulannya:
    - Label tampilan navigasi: "Hari ini", "Tugas", "Jadwal", "Pengaturan" (untuk Today, Tasks, Schedule, Settings).
    - Posisi navigasi: di bawah di mobile, pindah ke samping dari `md`.
    - Matriks 2×2 dari `md` (di bawahnya, kuadran ditumpuk satu kolom).
    - Today view dua kolom (timeline + daftar) dari `lg`.
-
-## j. Pertanyaan terbuka
-
-1. **Tema:** ikut sistem (`prefers-color-scheme`) saja, atau ada toggle manual? Kalau ada toggle, di mana preferensinya disimpan (store/repository atau `localStorage` terpisah)?
-2. **Label aksi kuadran:** cukup label definisi (bagian g), atau ditambah nama aksi seperti "Kerjakan", "Jadwalkan", "Delegasikan", "Hapus"?
-3. **Kontrol timer:** apakah ada jeda (pause)? Model timestamp di bagian h mendukungnya hanya jika jeda juga direkam sebagai timestamp. Ini terkait DECISION PENDING soal perekaman awal sesi.
-4. **Dialog di mode dark:** apakah scrim `rgb(20 33 61 / 0.45)` cukup terlihat di atas latar navy, atau dialog dark perlu border `--surface-glass-border` yang lebih tegas? Perlu dicek di browser saat Phase 3.
-5. **Notifikasi dalam aplikasi** (Phase 4): apakah memakai banner yang sama, atau komponen toast terpisah? Toast tidak dibahas di dokumen ini.
