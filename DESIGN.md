@@ -165,11 +165,29 @@ Baris `FAIL` adalah **pasangan yang sengaja dilarang**, dicantumkan sebagai dasa
 | dark | cream ring next to coral fill (rejected) | cream #F4EDE0 | coral #FF6B5B | 2.40:1 | 3:1 | FAIL |
 | light | needs-attention banner label | navy #14213D | --accent (coral) #FF6B5B | 5.71:1 | 4.5:1 | PASS |
 | dark | needs-attention banner label | navy #14213D | --accent (coral) #FF6B5B | 5.71:1 | 4.5:1 | PASS |
+| light | banner title/body | --text #14213D | banner --surface-solid #E9EAE2 | 13.17:1 | 4.5:1 | PASS |
+| light | banner secondary text | --text-muted #5F6777 | banner --surface-solid #E9EAE2 | 4.68:1 | 4.5:1 | PASS |
+| light | banner icon Q1/feasibility | --accent-ink #C81400 | banner --surface-solid #E9EAE2 | 4.87:1 | 3:1 | PASS |
+| light | banner icon unsupported | --brand-ink #126A9A | banner --surface-solid #E9EAE2 | 4.87:1 | 3:1 | PASS |
+| light | banner left rule Q1/feasibility (decorative) | --accent #FF6B5B | banner --surface-solid #E9EAE2 | 2.31:1 | 3:1 | FAIL |
+| light | banner left rule unsupported (decorative) | --brand-ink #126A9A | banner --surface-solid #E9EAE2 | 4.87:1 | 3:1 | PASS |
+| light | banner edge vs page | --surface-solid #E9EAE2 | page #F4EDE0 | 1.04:1 | 3:1 | FAIL |
+| dark | banner title/body | --text #F4EDE0 | banner --surface-solid #21334F | 10.94:1 | 4.5:1 | PASS |
+| dark | banner secondary text | --text-muted #A2A4A8 | banner --surface-solid #21334F | 5.11:1 | 4.5:1 | PASS |
+| dark | banner icon Q1/feasibility | --accent-ink #FF8679 | banner --surface-solid #21334F | 5.42:1 | 3:1 | PASS |
+| dark | banner icon unsupported | --brand-ink #98D3F3 | banner --surface-solid #21334F | 7.85:1 | 3:1 | PASS |
+| dark | banner left rule Q1/feasibility (decorative) | --accent #FF6B5B | banner --surface-solid #21334F | 4.55:1 | 3:1 | PASS |
+| dark | banner left rule unsupported (decorative) | --brand-ink #98D3F3 | banner --surface-solid #21334F | 7.85:1 | 3:1 | PASS |
+| dark | banner edge vs page | --surface-solid #21334F | page #14213D | 1.25:1 | 3:1 | FAIL |
 
 Hal yang perlu diperhatikan:
 
 - Margin `--accent-ink` dan `--brand-ink` di mode light tipis di kaca di atas blob coral (4,51:1). Blob tidak boleh diperkuat (alpha lebih tinggi) tanpa menghitung ulang.
 - Focus ring biru langit di samping fill coral (dark) hanya 1,72:1, dan ring cream juga gagal (2,40:1). Karena itu focus ring **selalu** memakai offset (bagian f), sehingga warna yang bersebelahan dengan ring adalah permukaan, bukan fill tombol.
+- Banner peringatan opak (bagian g) diuji pada `--surface-solid`. Teks dan ikonnya lolos. Ada dua baris yang gagal, keduanya sengaja dicatat:
+  - Garis kiri coral di mode light hanya 2,31:1 terhadap `--surface-solid`.
+  - Tepi banner terhadap halaman hanya 1,04:1 (light) dan 1,25:1 (dark).
+  Keduanya dekoratif. Makna banner dibawa oleh ikon dan judul teks, bukan oleh garis atau tepi, jadi garis dan tepi tidak boleh menjadi satu-satunya pembeda. Banner diberi border 1px `--surface-glass-border` seperti kartu.
 - Status `disabled` dikecualikan dari syarat kontras WCAG, tetapi tetap wajib punya teks yang terbaca dan alasan (bagian f).
 
 ## d. Spesifikasi glass
@@ -193,6 +211,12 @@ Tulis juga `-webkit-backdrop-filter` dengan nilai yang sama, untuk Safari.
 - `@media (prefers-reduced-transparency: reduce)`.
 
 Border dan kontras teks tetap sama, dan baris "fallback card (opaque)" di tabel sudah menguji ini. Media query `prefers-reduced-transparency` belum didukung semua browser. Di browser yang tidak mendukung, kaca tetap tampil, dan itu tetap aman karena kontras kaca sudah diuji pada latar terburuk.
+
+**Risiko performa (belum diuji).** `backdrop-filter` pada banyak kartu sekaligus di atas latar `position: fixed` bisa membuat scroll tersendat di perangkat kelas menengah. Ini belum diukur. Pada Phase 3, uji di perangkat menengah:
+- scroll di Today view dan matriks;
+- jumlah kartu kaca yang terlihat sekaligus;
+- mode light dan dark.
+Catat hasilnya di sini sebelum pola ini dipakai di semua layar. Sampai diuji, dokumen ini tidak mengklaim performanya aman.
 
 **`forced-colors: active`.** Kaca dan blob dimatikan, dan warna sistem yang dipakai. Border kartu tetap ada supaya batas komponen terlihat.
 
@@ -250,10 +274,12 @@ Skala bawaan Tailwind (kelipatan 4px). Padding kartu `p-4` di mobile dan `p-6` d
 
 | Titik henti | Lebar | Tata letak |
 | --- | --- | --- |
-| (dasar) | < 640px | Satu kolom; navigasi bawah (Today, Tasks, Schedule, Settings) |
-| `sm` | ≥ 640px | Satu kolom lebih lebar |
-| `md` | ≥ 768px | Matriks 2×2; navigasi pindah ke samping |
-| `lg` | ≥ 1024px | Today view dua kolom (timeline + daftar) |
+| (dasar) | < 640px | Satu kolom (mobile first, `TASKS.md` Phase 3) |
+| `sm` | ≥ 640px | Belum ditentukan |
+| `md` | ≥ 768px | Belum ditentukan |
+| `lg` | ≥ 1024px | Belum ditentukan |
+
+Navigasi memuat empat bagian: Today, Tasks, Schedule, Settings (`TASKS.md` Phase 3, "Layout and navigation"). Tata letak per titik henti, posisi navigasi, dan label tampilan berbahasa Indonesia masih usulan (lihat "Usulan untuk persetujuan pemilik", nomor 5).
 
 Target sentuh minimum 44×44px. Ini lebih besar dari minimum 24×24px di WCAG 2.2 AA.
 
@@ -269,7 +295,7 @@ Semua status di bawah ini wajib ada. **Focus ring** untuk semua elemen interakti
 | **Tombol sekunder** | Transparan, border 1px `--text`, teks `--text` | Latar `--surface-glass` | Ring | Sama dengan primer |
 | **Chip** (filter, kategori) | Fill `--brand`, teks `--on-accent` | Fill `--brand-hover` | Ring | Sama dengan primer |
 | **Lencana kuadran** | Lihat bagian g | Tidak interaktif | Tidak interaktif | Tidak berlaku |
-| **Banner peringatan** | Lihat bagian g; `role="status"` (Q1, feasibility, tak didukung) atau `role="alert"` (`needs-attention`) | Tombol di dalamnya mengikuti aturan tombol | Ring pada tombol di dalamnya | Tidak berlaku |
+| **Banner peringatan** | Opak (`--surface-solid`, border 1px `--surface-glass-border`), bukan kaca; lihat bagian g; `role="status"` (Q1, feasibility, tak didukung) atau `role="alert"` (`needs-attention`) | Tombol di dalamnya mengikuti aturan tombol | Ring pada tombol di dalamnya | Tidak berlaku |
 | **Tampilan timer** | Angka Geist Mono, `--text`, di kartu kaca; label tugas dan kuadran di atasnya | Tombol kontrol mengikuti aturan tombol | Ring pada tombol kontrol | Kontrol mulai dinonaktifkan dengan alasan bila sesi `unavailable` atau store tidak `ready` |
 
 Hanya ada satu tombol primer per layar. Aksi destruktif (reset) tidak memakai tombol primer di luar dialog konfirmasi.
@@ -295,9 +321,9 @@ Keempat peringatan wajib dibedakan lewat **ikon dan teks**, tidak lewat warna sa
 
 | Peringatan | Sumber | Ikon (bentuk) | Judul | Isi (contoh) | Gaya |
 | --- | --- | --- | --- | --- | --- |
-| Q1 overflow | `Q1OverflowWarning` (`type: "Q1_OVERFLOW"`, `shortfallPomodoros`) | Tumpukan meluap | "Q1 melebihi batas harian" | "{n} pomodoro Q1 tidak dijadwalkan hari ini." | Kaca, garis kiri 4px `--accent`, ikon `--accent-ink` |
-| Kekurangan feasibility | `FeasibilityWarning` (`shortfallPomodoros`) | Jam pasir | "Waktu tidak cukup sebelum tenggat" | "{tugas}: kurang {n} pomodoro sebelum {tanggal}." | Kaca, garis kiri 4px `--accent`, ikon `--accent-ink` |
-| Kasus tak didukung | Error engine (acara melewati tengah malam, exception `MODIFIED`) | Lingkaran dicoret | "Belum didukung" | "Acara yang melewati tengah malam belum didukung. Jadwal ini tidak disimpan." | Kaca, garis kiri 4px `--brand-ink`, ikon `--brand-ink` |
+| Q1 overflow | `Q1OverflowWarning` (`type: "Q1_OVERFLOW"`, `taskIds`, `shortfallPomodoros`), dikembalikan `autoFillToday` | Tumpukan meluap | "Q1 melebihi batas harian" | "{n} pomodoro Q1 tidak dijadwalkan hari ini." | `--surface-solid`, garis kiri 4px `--accent`, ikon `--accent-ink` |
+| Kekurangan feasibility | `FeasibilityWarning` (`taskId`, `shortfallPomodoros`), dari selector `selectFeasibility` | Jam pasir | "Waktu tidak cukup sebelum tenggat" | "{tugas}: kurang {n} pomodoro sebelum {tanggal}." | `--surface-solid`, garis kiri 4px `--accent`, ikon `--accent-ink` |
+| Kasus tak didukung | Acara melewati tengah malam: store menolak dengan `InvalidDataError` ("endTime must be after startTime"); exception `MODIFIED`: engine melempar error | Lingkaran dicoret | "Belum didukung" | "Acara yang melewati tengah malam belum didukung. Jadwal ini tidak disimpan." | `--surface-solid`, garis kiri 4px `--brand-ink`, ikon `--brand-ink` |
 | `needs-attention` | Store `hydration: "needs-attention"` | Perisai dengan tanda seru | "Data tidak bisa dibaca" | Lihat bagian i | Fill `--accent` opak, teks `--on-accent`, `role="alert"`, tidak bisa ditutup |
 
 Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pembedanya ikon dan judul. Warna khusus per tingkat keparahan ada di usulan.
@@ -309,15 +335,17 @@ Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pem
 - **Durasi diambil dari `UserSettings`.** Dengan begitu timer benar setelah tab tertidur, layar terkunci atau reload, dan perekaman awal sesi (DECISION PENDING di `TASKS.md`) bisa ditambahkan kemudian tanpa mengubah tampilan. Cukup simpan `startedAt`.
 - Format `mm:ss` dengan `tabular-nums`. Teks yang sudah diformat dihitung ulang paling sering satu kali per detik.
 - **Aksesibilitas:** elemen timer memakai `role="timer"` dengan `aria-live="off"`. Pengumuman `aria-live="polite"` terpisah hanya saat sesi atau istirahat selesai. Tidak ada pengumuman tiap detik.
-- **Saat selesai:** catat lewat `completePomodoro`. Sesi yang ditinggalkan dicatat dengan status abandoned, sesuai store.
+- **Saat selesai:** catat lewat `completePomodoro`. Sesi yang ditinggalkan juga dicatat lewat `completePomodoro`, dengan `completed: false` di `PomodoroSession`. Tidak ada status bernama "abandoned" di kode. Sesi seperti itu menandai alokasinya sudah dimulai, tanpa menambah hitungan.
 
 ## i. Wajib tampil di UI
 
 1. **`hydration: "needs-attention"`.** Banner `needs-attention` (bagian g) ditampilkan di atas semua konten. Semua aksi pengubah data dinonaktifkan dengan alasan tertulis, karena store memang menolaknya dengan `StoreNotReadyError`.
-   - Isi untuk `issues` (data rusak): "Data perencanaan tidak bisa dibaca ({reason}). Data asli tidak diubah. Salinannya disimpan di {backupKey}."
-   - Isi untuk `loadError` (penyimpanan gagal dibaca, mis. diblokir browser): pesan itu ditampilkan beserta tombol "Coba lagi".
-   - Tombol yang tersedia: "Coba lagi" (`resolveStorageIssue("retry")`) dan "Mulai dari data kosong…" (membuka dialog konfirmasi).
-2. **`sessionsStatus: "unavailable"`.** Banner `role="status"` dengan ikon perisai dan judul "Riwayat sesi tidak bisa dibaca". Tombol mulai timer dinonaktifkan dengan alasan "Sesi baru tidak bisa dicatat sampai riwayat sesi dipulihkan." Perencanaan lain tetap berjalan, sesuai perilaku store. Jalan keluarnya sama dengan nomor 1, dengan dialog yang menyebut backup log sesi.
+   - Ada dua penyebab, dan keduanya punya isi yang berbeda:
+     - Ada `issues` dengan `key: "data"` (data perencanaan rusak). Isinya: "Data perencanaan tidak bisa dibaca ({reason}). Data asli tidak diubah. Salinannya disimpan di {backupKey}."
+     - `loadError` terisi (penyimpanan gagal dibaca, mis. diblokir browser; `issues` kosong). Isinya: pesan `loadError`.
+   - Tombol "Coba lagi" (`resolveStorageIssue("retry")`) selalu ada.
+   - Tombol "Mulai dari data kosong…" (membuka dialog konfirmasi untuk `resolveStorageIssue("reset")`) hanya tampil bila `issues` tidak kosong. Di kasus `loadError` saja, reset tidak mengubah apa pun, karena store hanya mereset key yang ada di `issues`.
+2. **`sessionsStatus: "unavailable"`** (ada `issues` dengan `key: "sessions"`; `hydration` tetap `"ready"`). Banner `role="status"` dengan ikon perisai dan judul "Riwayat sesi tidak bisa dibaca". Tombol mulai timer dinonaktifkan dengan alasan "Sesi baru tidak bisa dicatat sampai riwayat sesi dipulihkan." Perencanaan lain tetap berjalan, sesuai perilaku store. Jalan keluarnya sama dengan nomor 1, dengan dialog yang menyebut backup log sesi.
 3. **Dialog konfirmasi sebelum `resolveStorageIssue("reset")`.** Dialog opak (elevasi 3), bukan banner, dan bukan aksi satu klik.
    - Judul: "Mulai dari data kosong?"
    - Isi wajib menyebut backup: "Data yang rusak tidak dihapus: salinannya tetap ada di {backupKey}. Setelah ini Alinor memakai data kosong."
@@ -334,7 +362,12 @@ Hal-hal berikut belum final dan perlu persetujuan:
    - dependensi seperti `lucide-react` (perlu persetujuan, karena `CLAUDE.md` melarang menambah dependensi tanpa izin).
    Bentuk ikon di bagian g berlaku untuk kedua pilihan.
 3. **Font body.** `src/app/globals.css` saat ini menimpa font dengan `font-family: Arial, Helvetica, sans-serif` pada `body`, padahal Geist sudah dimuat. Usulan untuk Phase 3: pakai `var(--font-sans)`.
-4. **Bahasa dokumen.** `src/app/layout.tsx` memakai `lang="en"`, sedangkan antarmuka berbahasa Indonesia. Usulan: `lang="id"`. Ini juga memengaruhi pembaca layar dan pemenggalan kata.
+4. **Bahasa dokumen.** Diputuskan pemilik: antarmuka berbahasa Indonesia. Penerapan `lang="id"` di `src/app/layout.tsx` **belum dilakukan**. Branch `chore/app-metadata` hanya mengganti `title` dan `description`, dan `lang` di sana masih `"en"`.
+5. **Navigasi dan tata letak per titik henti.** Tidak ada di `TASKS.md` maupun `CLAUDE.md`, jadi belum final:
+   - Label tampilan navigasi: "Hari ini", "Tugas", "Jadwal", "Pengaturan" (untuk Today, Tasks, Schedule, Settings).
+   - Posisi navigasi: di bawah di mobile, pindah ke samping dari `md`.
+   - Matriks 2×2 dari `md` (di bawahnya, kuadran ditumpuk satu kolom).
+   - Today view dua kolom (timeline + daftar) dari `lg`.
 
 ## j. Pertanyaan terbuka
 
