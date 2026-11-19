@@ -274,12 +274,12 @@ Skala bawaan Tailwind (kelipatan 4px). Padding kartu `p-4` di mobile dan `p-6` d
 
 | Titik henti | Lebar | Tata letak |
 | --- | --- | --- |
-| (dasar) | < 640px | Satu kolom (mobile first, `TASKS.md` Phase 3) |
-| `sm` | ≥ 640px | Belum ditentukan |
-| `md` | ≥ 768px | Belum ditentukan |
-| `lg` | ≥ 1024px | Belum ditentukan |
+| (dasar) | < 640px | Satu kolom (mobile first, `TASKS.md` Phase 3); navigasi bawah (Keputusan pemilik, nomor 8) |
+| `sm` | ≥ 640px | Navigasi bawah (Keputusan pemilik, nomor 8) |
+| `md` | ≥ 768px | Navigasi samping; matriks 2×2 (Keputusan pemilik, nomor 8) |
+| `lg` | ≥ 1024px | Today view dua kolom (Keputusan pemilik, nomor 8) |
 
-Navigasi memuat empat bagian: Today, Tasks, Schedule, Settings (`TASKS.md` Phase 3, "Layout and navigation"). Tata letak per titik henti, posisi navigasi, dan label tampilan berbahasa Indonesia masih usulan (lihat "Pertanyaan terbuka", nomor 3).
+Navigasi memuat empat bagian: Today, Tasks, Schedule, Settings (`TASKS.md` Phase 3, "Layout and navigation"). Posisi navigasi, tata letak per titik henti, dan label tampilan berbahasa Indonesia ditetapkan di "Keputusan pemilik", nomor 8. Bentuk matriks di bawah `md` belum ditentukan (lihat "Pertanyaan terbuka", nomor 3).
 
 Target sentuh minimum 44×44px. Ini lebih besar dari minimum 24×24px di WCAG 2.2 AA.
 
@@ -361,13 +361,10 @@ Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pem
 5. **Jeda (pause) timer:** tidak ada. Ini konsisten dengan tidak merekam awal sesi.
 6. **Font body:** Geist. Override `Arial` di `globals.css` diganti `var(--font-sans)` pada Phase 3.
 7. **Bahasa antarmuka:** Indonesia, `lang="id"`.
+8. **Navigasi dan tata letak:** navigasi bawah di mobile, navigasi samping dari titik henti `md`, matriks 2×2 di `md`, Today view dua kolom di `lg`. Label tampilan: "Hari ini", "Tugas", "Jadwal", "Pengaturan". Nama tab di kode dan `TASKS.md` tetap Today, Tasks, Schedule, Settings.
 
 ## j. Pertanyaan terbuka
 
 1. **Dialog di mode dark:** apakah scrim `rgb(20 33 61 / 0.45)` cukup terlihat di atas latar navy, atau dialog dark perlu border `--surface-glass-border` yang lebih tegas? Uji di browser pada Phase 3.
 2. **Notifikasi dalam aplikasi** (Phase 4): apakah memakai banner yang sama, atau komponen toast terpisah? Toast tidak dibahas di dokumen ini.
-3. **Navigasi dan tata letak per titik henti.** Tidak ada di `TASKS.md` maupun `CLAUDE.md`, jadi belum final. Usulannya:
-   - Label tampilan navigasi: "Hari ini", "Tugas", "Jadwal", "Pengaturan" (untuk Today, Tasks, Schedule, Settings).
-   - Posisi navigasi: di bawah di mobile, pindah ke samping dari `md`.
-   - Matriks 2×2 dari `md` (di bawahnya, kuadran ditumpuk satu kolom).
-   - Today view dua kolom (timeline + daftar) dari `lg`.
+3. Bentuk matriks Eisenhower di bawah md (mobile): belum ditentukan.
