@@ -24,7 +24,12 @@ import {
 } from "../repository/repository";
 import { SessionsUnavailableError, StoreNotReadyError } from "./errors";
 import { createAlinorStore } from "./store";
-import type { NewRuleInput, NewTaskInput } from "./types";
+import type {
+  AlinorActions,
+  AlinorStore,
+  NewRuleInput,
+  NewTaskInput,
+} from "./types";
 
 const MON = "2026-10-19"; // Senin
 const TUE = "2026-10-20";
@@ -243,6 +248,67 @@ describe("hydration", () => {
     expect(state().hydration).toBe("needs-attention");
     expect(state().loadError).toContain("Storage get failed");
   });
+});
+
+describe("needs-attention gate", () => {
+  // Aksi yang sengaja tidak melewati gerbang begin(), masing-masing dengan alasannya.
+  const UNGATED = {
+    hydrate: "memuat data; justru jalan keluar dari needs-attention",
+    resolveStorageIssue:
+      "pilihan eksplisit pengguna (reset atau retry) untuk keluar dari needs-attention",
+  } satisfies Partial<Record<keyof AlinorActions, string>>;
+
+  type GatedAction = Exclude<keyof AlinorActions, keyof typeof UNGATED>;
+
+  // Record memaksa setiap aksi baru masuk ke sini saat typecheck; test penjaga di bawah memeriksanya saat runtime.
+  const GATED: Record<GatedAction, (s: AlinorStore) => Promise<unknown>> = {
+    addTask: (s) => s.addTask(taskInput()),
+    updateTask: (s) => s.updateTask("laporan", { title: "x" }),
+    removeTask: (s) => s.removeTask("laporan"),
+    markTaskDone: (s) => s.markTaskDone("laporan"),
+    addRule: (s) => s.addRule(meetingInput),
+    updateRule: (s) => s.updateRule("kelas", { title: "x" }),
+    removeRule: (s) => s.removeRule("kelas"),
+    cancelOccurrence: (s) => s.cancelOccurrence("kelas", MON),
+    restoreOccurrence: (s) => s.restoreOccurrence("exc"),
+    updateSettings: (s) => s.updateSettings({ postEventBufferMin: 30 }),
+    autoFillToday: (s) => s.autoFillToday(),
+    completePomodoro: (s) => s.completePomodoro(sampleSession("s1")),
+  };
+
+  const dataOf = (s: AlinorStore) =>
+    Object.fromEntries(
+      Object.entries(s).filter(([, value]) => typeof value !== "function"),
+    );
+
+  test("every function on the store is either gated or an explicit exception", () => {
+    const { state } = setup();
+    const functions = Object.entries(state())
+      .filter(([, value]) => typeof value === "function")
+      .map(([name]) => name)
+      .sort();
+    expect(functions).toEqual(
+      [...Object.keys(GATED), ...Object.keys(UNGATED)].sort(),
+    );
+  });
+
+  test.each(Object.entries(GATED))(
+    "%s is rejected in needs-attention and changes nothing",
+    async (_name, run) => {
+      const kv = createMemoryKv({ "alinor:data": "{bad" });
+      const { state } = setup({ kv });
+      await state().hydrate();
+      expect(state().hydration).toBe("needs-attention");
+      const before = structuredClone(dataOf(state()));
+      const storedBefore = kv.snapshot();
+
+      await expect(run(state())).rejects.toBeInstanceOf(StoreNotReadyError);
+
+      expect(dataOf(state())).toEqual(before);
+      expect(kv.snapshot()).toEqual(storedBefore);
+      expect(kv.snapshot()["alinor:data"]).toBe("{bad");
+    },
+  );
 });
 
 describe("resolveStorageIssue", () => {
