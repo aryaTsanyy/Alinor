@@ -29,9 +29,9 @@ Before ticking a box: `pnpm test:run` and `pnpm lint` are green. Never change `s
 - [x] Derived selectors (not stored): quadrant per task via `deriveTaskQuadrant`, today's free slots via `calculateFreeSlots`, feasibility via `computeFeasibility`.
 - [x] Planning actions: `autoFillToday` (`generateAutoAllocations`); `resolveCollisions` after every schedule change (rules, occurrences, settings). There is no `rolloverIfNewDay` action: `rolloverAllocations` runs automatically in `hydrate()` and before every data-changing action (`begin()`). `now` is always injected, never read inside `src/core/`.
 - [x] Session actions: `completePomodoro` (including the abandoned status) exists; it updates `completedPomodoros` and allocation status consistently (via `getStartedAllocationIds`).
-- [ ] DECISION PENDING (owner): does the store record a session start (e.g. to recover an interrupted session)? Decide before Phase 3.
+- [x] Decided (owner, 2026-11-19): the store does not record a session start for now; wanted later (add a `startPomodoro` action and persist the running session through a schema migration). The timer derives remaining time from timestamps (`DESIGN.md` section h), so adding this later stays cheap.
 - [x] Persistence: `hydrate()` loads through `StorageRepository`, which returns a `LoadResult` (`empty`, `ok`, `invalid`); `empty` means `emptyPlanningData()`. Every mutation saves. Corrupt data is backed up, puts the store in `needs-attention`, and is never overwritten.
-- [ ] DECISION PENDING (owner): debounce saves or keep saving on every mutation.
+- [x] Decided (owner, 2026-11-19): save on every mutation, no debounce.
 - [x] Input validation at the store boundary (non-negative integer pomodoros, valid dates and times): the store rejects bad input with `InvalidDataError` and leaves state and storage untouched.
 - [ ] Tests use `createMemoryKv` and a fixed `now`. Add a property test that save then hydrate restores the same state.
 - [ ] Parameterized test proving every data-changing store action is rejected in `needs-attention` (today only `addTask` is tested).

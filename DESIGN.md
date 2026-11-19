@@ -332,7 +332,7 @@ Q1 overflow dan kekurangan feasibility memakai warna yang sama (coral), jadi pem
 
 - **Sisa waktu selalu diturunkan dari timestamp:** `remainingMs = durationMs - (now - startedAt)`, dengan `now` dari `clock` yang di-inject (sama dengan store) dan dipotong ke 0.
 - **Tidak ada penghitung yang berdetak.** Interval atau `requestAnimationFrame` hanya memicu render ulang dengan membaca `clock()`. Interval tidak pernah mengurangi state.
-- **Durasi diambil dari `UserSettings`.** Dengan begitu timer benar setelah tab tertidur, layar terkunci atau reload, dan perekaman awal sesi (DECISION PENDING di `TASKS.md`) bisa ditambahkan kemudian tanpa mengubah tampilan. Cukup simpan `startedAt`.
+- **Durasi diambil dari `UserSettings`.** Dengan begitu timer benar setelah tab tertidur, layar terkunci atau reload, dan perekaman awal sesi (diputuskan tidak untuk sekarang, lihat `TASKS.md` Phase 2) bisa ditambahkan kemudian tanpa mengubah tampilan. Cukup simpan `startedAt`.
 - Format `mm:ss` dengan `tabular-nums`. Teks yang sudah diformat dihitung ulang paling sering satu kali per detik.
 - **Aksesibilitas:** elemen timer memakai `role="timer"` dengan `aria-live="off"`. Pengumuman `aria-live="polite"` terpisah hanya saat sesi atau istirahat selesai. Tidak ada pengumuman tiap detik.
 - **Saat selesai:** catat lewat `completePomodoro`. Sesi yang ditinggalkan juga dicatat lewat `completePomodoro`, dengan `completed: false` di `PomodoroSession`. Tidak ada status bernama "abandoned" di kode. Sesi seperti itu menandai alokasinya sudah dimulai, tanpa menambah hitungan.
